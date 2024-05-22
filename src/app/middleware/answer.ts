@@ -1,4 +1,4 @@
-const TopicForum = require('../../db/models/topicForum');
+const TopicForum = require('../../db/models/topicforum');
 const Answer = require('../../db/models/answer');
 
 import { Request, Response, NextFunction } from "express";
