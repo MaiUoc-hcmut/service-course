@@ -1,0 +1,81 @@
+{
+    "name": "Name of course",
+    "description": "Description of course",
+    "price": 999000,
+    "object": "Học sinh yếu",
+    "status": "draft",
+    "requirement": "Biết bảng cửu chương",
+    "goal": "Từ học lực yếu lên khá",
+    "chapters": [
+        {
+            "name": "name of chapter 1",
+            "description": "description of chapter 1",
+            "lectures": [
+                {
+                    "name": "name of lecture 1",
+                    "description": "description of lecture 1",
+                    "status": true
+                },
+                {
+                    "name": "name of lecture 2",
+                    "description": "description of lecture 2",
+                    "status": true
+                },
+                {
+                    "name": "name of lecture 3",
+                    "description": "description of lecture 3",
+                    "video": "File video gì đó",
+                    "status": true
+                }
+            ]
+        },
+        {
+            "name": "name of chapter 2",
+            "description": "description of chapter 2",
+            "lectures": [
+                {
+                    "name": "name of lecture 1",
+                    "description": "description of lecture 1",
+                    "video": "File video gì đó",
+                    "status": true
+                },
+                {
+                    "name": "name of lecture 2",
+                    "description": "description of lecture 2",
+                    "video": "File video gì đó",
+                    "status": true
+                },
+                {
+                    "name": "name of lecture 3",
+                    "description": "description of lecture 3",
+                    "video": "File video gì đó",
+                    "status": true
+                }
+            ]
+        },
+        {
+            "name": "name of chapter 2",
+            "description": "description of chapter 2",
+            "lectures": [
+                {
+                    "name": "name of lecture 1",
+                    "description": "description of lecture 1",
+                    "video": "File video gì đó",
+                    "status": true
+                },
+                {
+                    "name": "name of lecture 2",
+                    "description": "description of lecture 2",
+                    "video": "File video gì đó",
+                    "status": true
+                },
+                {
+                    "name": "name of lecture 3",
+                    "description": "description of lecture 3",
+                    "video": "File video gì đó",
+                    "status": true
+                }
+            ]
+        }
+    ]
+}

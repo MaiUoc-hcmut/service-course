@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "0974222365",
+    "database": "service_course",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "0974222365",
+    "database": "service_course",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "0974222365",
+    "database": "service_course",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}
