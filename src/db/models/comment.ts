@@ -51,7 +51,7 @@ Comment.init(
     },
   },
   {
-    tableName: 'Comment',
+    tableName: 'comment',
     sequelize,
   },
 );
