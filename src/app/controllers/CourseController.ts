@@ -310,17 +310,17 @@ class CourseController {
                 ]
             };
 
-            const { onTime } = req.query;
-            const now = new Date();
-            if (typeof onTime === "string" && onTime === "true") {
-                queryOption.include[0].where = {
-                    [Op.or]: [
-                        { start_time: { [Op.is]: null } },
-                        { start_time: { [Op.lte]: now } }
-                    ],
-                    expire: { [Op.gte]: now }
-                }
-            }
+            // const { onTime } = req.query;
+            // const now = new Date();
+            // if (typeof onTime === "string" && onTime === "true") {
+            //     queryOption.include[0].where = {
+            //         [Op.or]: [
+            //             { start_time: { [Op.is]: null } },
+            //             { start_time: { [Op.lte]: now } }
+            //         ],
+            //         expire: { [Op.gte]: now }
+            //     }
+            // }
 
             const course = await Course.findOne(queryOption);
 

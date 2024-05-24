@@ -5,6 +5,7 @@ const Forum = require('../../db/models/forum');
 const TopicForum = require('../../db/models/topicforum');
 const Review = require('../../db/models/review');
 const Comment = require('../../db/models/comment');
+const StudentCourse = require('../../db/models/student-course');
 
 import { Request, Response, NextFunction } from 'express';
 
@@ -23,6 +24,8 @@ class UserInformationController {
             const course_quantity = await Course.count({
                 where: { id_teacher }
             });
+
+            const studentRecords = await StudentCourse.findAll();
 
             const newCommentOnDay = await Comment.count({
                 include: [{
