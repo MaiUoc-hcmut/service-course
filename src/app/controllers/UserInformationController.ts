@@ -25,7 +25,24 @@ class UserInformationController {
                 where: { id_teacher }
             });
 
-            const studentRecords = await StudentCourse.findAll();
+            const studentRecords = await StudentCourse.findAll({
+                include: [{
+                    model: Course,
+                    where: {
+                        id_teacher
+                    }
+                }]
+            });
+
+            let students: string[] = [];
+
+            for (const record of studentRecords) {
+                if (students.includes(record.id_student)) {
+                    continue
+                } else {
+                    students.push(record.id_student);
+                }
+            }
 
             const newCommentOnDay = await Comment.count({
                 include: [{
@@ -85,6 +102,7 @@ class UserInformationController {
             })
             
             res.status(200).json({
+                student_quantity: students.length,
                 course_quantity,
                 newCommentOnDay,
                 newTopicInForumOnDay,
