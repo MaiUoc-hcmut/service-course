@@ -504,6 +504,20 @@ class CourseController {
                 course.dataValues.cart_or_bought = "cart";
             }
 
+            try {
+                const teacher = await axios.get(`${process.env.BASE_URL_LOCAL}/teacher/get-teacher-by-id/${course.id_teacher}`);
+
+                course.dataValues.teacher = {
+                    id: teacher.data.id,
+                    name: teacher.data.name,
+                    avatar: teacher.data.avatar
+                }
+
+                delete course.dataValues.id_teacher
+            } catch (error: any) {
+                console.log(error.message);
+            }
+
             res.status(200).json(course);
         } catch (error: any) {
             console.log(error.message);
