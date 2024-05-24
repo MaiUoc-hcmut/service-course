@@ -139,7 +139,7 @@ class CheckingCourse {
                 return next();
             }
 
-            const response = await axios.get(`${process.env.BASE_URL_PAYMENT_LOCAL}/cart/check/${id_course}/${id_user}`);
+            const response = await axios.get(`${process.env.BASE_URL_PAYMENT_LOCAL}/cart/check/${id_course}/${id_user}/product=course`);
             if (response.data.result) {
                 req.authority = -1;
                 req.user = user;
