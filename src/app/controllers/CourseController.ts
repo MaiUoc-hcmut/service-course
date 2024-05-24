@@ -815,7 +815,6 @@ class CourseController {
     studentBuyACourse = async (req: Request, res: Response, _next: NextFunction) => {
         const t = await sequelize.transaction();
         try {
-            console.log(req.student);
             const id_student = req.student.data.id;
             const id_course = req.params.courseId;
 
@@ -847,6 +846,7 @@ class CourseController {
                 id_forum: forum.id
             }
 
+            // Send notification to teacher who own this course
             try {
                 const response = await axios.post(`${process.env.BASE_URL_NOTIFICATION_LOCAL}/notification/student-buy-course`, {
                     data
@@ -855,6 +855,7 @@ class CourseController {
                 error_message.push("Fail to send notify to teacher who own this course!")
             }
 
+            // Send message to student
             try {
                 const teacher = await axios.get(`${process.env.BASE_URL_LOCAL}/teacher/get-teacher-by-id/${course.id_teacher}`);
                 const data = {
@@ -1675,7 +1676,7 @@ class CourseController {
 
             await t.commit();
 
-            index.deleteObject(req.params.courseId);
+            await index.deleteObject(req.params.courseId);
 
             res.status(200).json({
                 id: req.params.courseId,
