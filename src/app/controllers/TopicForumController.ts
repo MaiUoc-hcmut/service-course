@@ -113,7 +113,7 @@ class TopicForumController {
                     if (reply.role === "student") {
                         const user = await axios.get(`${process.env.BASE_URL_LOCAL}/student/${reply.id_user}`);
 
-                        reply.dataValues.user = { avatar: user.avatar, name: user.name, role: reply.role, id: user.data.id };
+                        reply.dataValues.user = { avatar: user.data.avatar, name: user.data.name, role: reply.role, id: user.data.id };
                         delete reply.dataValues.role;
                     } else if (reply.role === "teacher") {
                         const user = await axios.get(`${process.env.BASE_URL_LOCAL}/teacher/get-teacher-by-id/${reply.id_user}`);
