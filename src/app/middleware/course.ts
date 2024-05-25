@@ -107,7 +107,7 @@ class CheckingCourse {
 
     checkGetDetailCourse = async (req: Request, _res: Response, next: NextFunction) => {
         try {
-            if (req.authority === 0) next();
+            if (req.authority === 0) return next();
             const id_user = req.user?.user.data.id;
             const role = req.user?.role;
             const id_course = req.params.courseId;
