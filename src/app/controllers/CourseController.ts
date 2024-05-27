@@ -1542,7 +1542,6 @@ class CourseController {
                         await chapterToDelete.destroy({ transaction: t });
                         continue;
                     }
-
                     // If chapterBody have id field, means chapter already exist, check the id is valid or not
                     const chapterToUpdate = await Chapter.findByPk(chapterBody.id);
 
@@ -1596,7 +1595,7 @@ class CourseController {
                                             type: "document"
                                         }
                                     })
-    
+
                                     // If draft does not exist, means the video is not uploaded yet
                                     let videoTopicUrl = "";
                                     let videoTopicDuration = 0;
@@ -1616,7 +1615,7 @@ class CourseController {
                                             await docDraft.destroy({ transaction: t });
                                         }
                                     }
-    
+
                                     const newTopic = await Topic.create({
                                         id_chapter: chapter.id,
                                         ...topic,
@@ -1626,7 +1625,7 @@ class CourseController {
                                     }, {
                                         transaction: t
                                     });
-    
+
                                     topic.type === "lecture" ? totalLecture++ : totalExam++;
                                     await newTopic.addDocuments(documentInstances);
                                 }
