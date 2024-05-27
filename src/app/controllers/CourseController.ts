@@ -1120,15 +1120,18 @@ class CourseController {
                 transaction: t
             });
 
+            try {
+                const data = {
+                    id_user: id_teacher,
+                    id_course: newCourse.id,
+                    id_forum: newForum.id,
+                    name: newCourse.name
+                }
 
-            const data = {
-                id_user: id_teacher,
-                id_course: newCourse.id,
-                id_forum: newForum.id,
-                name: newCourse.name
+                const response = await axios.get(`${process.env.BASE_URL_NOTIFICATION_LOCAL}/notification/create-course`, { data });
+            } catch (error: any) {
+                console.log(error.message);
             }
-
-            const response = await axios.get(`${process.env.BASE_URL_NOTIFICATION_LOCAL}/notification/create-course`, { data });
 
             await t.commit();
 
@@ -1433,55 +1436,81 @@ class CourseController {
                         if (topics !== undefined) {
                             let j = 1;
                             for (const topic of topics) {
-
-                                // Check if the video has been uploaded or not
-                                const topicDraft = await CourseDraft.findOne({
-                                    where: {
-                                        id_topic: topic.id,
-                                        type: "lecture"
-                                    }
-                                });
-
-                                const documentsDraft = await CourseDraft.All({
-                                    where: {
-                                        id_topic: topic.id,
-                                        type: "document"
-                                    }
-                                })
-
-                                let videoTopicUrl = "";
-                                let videoTopicDuration = 0;
-
-                                // If video of topic has been uploaded, then assign the url and duration to variable to create new topic
-                                if (topicDraft) {
-                                    videoTopicUrl = topicDraft.url;
-                                    videoTopicDuration = topicDraft.duration;
-                                }
-
-                                let documentInstances = [];
-
-                                if (documentsDraft.length > 0) {
-                                    for (const docDraft of documentsDraft) {
-                                        const document = await Document.findByPk(docDraft.id_document);
-                                        documentInstances.push(document);
-
-                                        await docDraft.destroy({ transaction: t });
-                                    }
-                                }
-
-                                const newTopic = await Topic.create({
-                                    id_chapter: newChapter.id,
-                                    ...topic,
-                                    video: videoTopicUrl,
-                                    duration: videoTopicDuration,
-                                    order: j,
-                                }, {
-                                    transaction: t
-                                });
                                 topic.type === "lecture" ? totalLecture++ : totalExam++;
-                                j++;
+                                if (topic.type === "exam") {
+                                    const headers = {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': req.headers.authorization
+                                    }
+                                    topic.exam.data.categories = categories;
+                                    topic.exam.data.id_course = course.id;
+                                    topic.exam.data.title = topic.name;
+                                    const exam = await axios.post(
+                                        `${process.env.BASE_URL_EXAM_LOCAL}/exams`,
+                                        topic.exam,
+                                        { headers }
+                                    );
+    
+                                    await Topic.create({
+                                        id_chapter: newChapter.id,
+                                        id_exam: exam.data.id,
+                                        name: topic.name,
+                                        description: topic.description,
+                                        order: j,
+                                        status: topic.status,
+                                        type: "exam",
+                                    }, {
+                                        transaction: t
+                                    });
+                                } else {
+                                    // Check if the video has been uploaded or not
+                                    const topicDraft = await CourseDraft.findOne({
+                                        where: {
+                                            id_topic: topic.id,
+                                            type: "lecture"
+                                        }
+                                    });
 
-                                newTopic.addDocuments(documentInstances);
+                                    const documentsDraft = await CourseDraft.All({
+                                        where: {
+                                            id_topic: topic.id,
+                                            type: "document"
+                                        }
+                                    })
+
+                                    let videoTopicUrl = "";
+                                    let videoTopicDuration = 0;
+
+                                    // If video of topic has been uploaded, then assign the url and duration to variable to create new topic
+                                    if (topicDraft) {
+                                        videoTopicUrl = topicDraft.url;
+                                        videoTopicDuration = topicDraft.duration;
+                                    }
+
+                                    let documentInstances = [];
+
+                                    if (documentsDraft.length > 0) {
+                                        for (const docDraft of documentsDraft) {
+                                            const document = await Document.findByPk(docDraft.id_document);
+                                            documentInstances.push(document);
+
+                                            await docDraft.destroy({ transaction: t });
+                                        }
+                                    }
+
+                                    const newTopic = await Topic.create({
+                                        id_chapter: newChapter.id,
+                                        ...topic,
+                                        video: videoTopicUrl,
+                                        duration: videoTopicDuration,
+                                        order: j,
+                                    }, {
+                                        transaction: t
+                                    });
+
+                                    newTopic.addDocuments(documentInstances);
+                                }
+                                j++;
                             }
                         }
                         i++;
@@ -1528,52 +1557,80 @@ class CourseController {
                         for (const topic of topics) {
                             // If topic does not have id, means new topic will be add
                             if (topic.modify === "create") {
-                                const topicDraft = await CourseDraft.findOne({
-                                    where: {
-                                        id_topic: topic.id,
-                                        type: "lecture"
-                                    },
-                                });
-
-                                const documentsDraft = await CourseDraft.findAll({
-                                    where: {
-                                        id_topic: topic.id,
-                                        type: "document"
+                                if (topic.type === "exam") {
+                                    const headers = {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': req.headers.authorization
                                     }
-                                })
-
-                                // If draft does not exist, means the video is not uploaded yet
-                                let videoTopicUrl = "";
-                                let videoTopicDuration = 0;
-
-                                if (topicDraft) {
-                                    videoTopicUrl = topicDraft.url;
-                                    videoTopicDuration = topicDraft.duration;
+                                    topic.exam.data.categories = categories;
+                                    topic.exam.data.id_course = course.id;
+                                    topic.exam.data.title = topic.name;
+                                    const exam = await axios.post(
+                                        `${process.env.BASE_URL_EXAM_LOCAL}/exams`,
+                                        topic.exam,
+                                        { headers }
+                                    );
+    
+                                    await Topic.create({
+                                        id_chapter: chapterToUpdate.id,
+                                        id_exam: exam.data.id,
+                                        name: topic.name,
+                                        description: topic.description,
+                                        order: j,
+                                        status: topic.status,
+                                        type: "exam",
+                                    }, {
+                                        transaction: t
+                                    });    
+                                } else {
+                                    const topicDraft = await CourseDraft.findOne({
+                                        where: {
+                                            id_topic: topic.id,
+                                            type: "lecture"
+                                        },
+                                    });
+    
+                                    const documentsDraft = await CourseDraft.findAll({
+                                        where: {
+                                            id_topic: topic.id,
+                                            type: "document"
+                                        }
+                                    })
+    
+                                    // If draft does not exist, means the video is not uploaded yet
+                                    let videoTopicUrl = "";
+                                    let videoTopicDuration = 0;
+    
+                                    if (topicDraft) {
+                                        videoTopicUrl = topicDraft.url;
+                                        videoTopicDuration = topicDraft.duration;
+                                    }
+    
+                                    let documentInstances = [];
+    
+                                    if (documentsDraft.length > 0) {
+                                        for (const docDraft of documentsDraft) {
+                                            const document = await Document.findByPk(docDraft.id_document);
+                                            documentInstances.push(document);
+    
+                                            await docDraft.destroy({ transaction: t });
+                                        }
+                                    }
+    
+                                    const newTopic = await Topic.create({
+                                        id_chapter: chapter.id,
+                                        ...topic,
+                                        video: videoTopicUrl,
+                                        duration: videoTopicDuration,
+                                        order: j,
+                                    }, {
+                                        transaction: t
+                                    });
+    
+                                    topic.type === "lecture" ? totalLecture++ : totalExam++;
+                                    await newTopic.addDocuments(documentInstances);
                                 }
 
-                                let documentInstances = [];
-
-                                if (documentsDraft.length > 0) {
-                                    for (const docDraft of documentsDraft) {
-                                        const document = await Document.findByPk(docDraft.id_document);
-                                        documentInstances.push(document);
-
-                                        await docDraft.destroy({ transaction: t });
-                                    }
-                                }
-
-                                const newTopic = await Topic.create({
-                                    id_chapter: chapter.id,
-                                    ...topic,
-                                    video: videoTopicUrl,
-                                    duration: videoTopicDuration,
-                                    order: j,
-                                }, {
-                                    transaction: t
-                                });
-
-                                topic.type === "lecture" ? totalLecture++ : totalExam++;
-                                await newTopic.addDocuments(documentInstances);
                                 j++;
                                 continue;
                             }
