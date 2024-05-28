@@ -481,8 +481,11 @@ class CourseController {
                         try {
                             const exam = await axios.get(`${process.env.BASE_URL_EXAM_LOCAL}/exams/${topic.id_exam}`);
                             topic.exam = {
-                                quantity_question: exam.data.quantity_question,
-                                period: exam.data.period
+                                data: {
+                                    quantity_question: exam.data.quantity_question,
+                                    period: exam.data.period,
+                                    pass_score: exam.data.pass_score
+                                }
                             }
 
                             if (topic.status === "paid" && authority === 0) {
