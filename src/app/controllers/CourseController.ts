@@ -1678,41 +1678,45 @@ class CourseController {
                                 continue;
                             }
 
-                            const topicToUpdate = await Topic.findByPk(topic.id);
+                            if (topic.modify === "change") {
+                                if (topic.type === "lecture") {
+                                    const topicToUpdate = await Topic.findByPk(topic.id);
 
-                            if (!topicToUpdate) throw new Error("Topic does not exist");
+                                    if (!topicToUpdate) throw new Error("Topic does not exist");
 
-                            const lectureDraft = await CourseDraft.findOne({
-                                where: {
-                                    id_topic: topic.id,
-                                    type: "lecture",
+                                    const lectureDraft = await CourseDraft.findOne({
+                                        where: {
+                                            id_topic: topic.id,
+                                            type: "lecture",
+                                        }
+                                    });
+
+                                    const documentsDraft = await CourseDraft.findAll({
+                                        where: {
+                                            id_topic: topic.id,
+                                            type: "document",
+                                        }
+                                    });
+
+                                    let video = topicToUpdate.video;
+                                    let documentInstances = [];
+
+                                    if (lectureDraft) {
+                                        video = lectureDraft.url;
+                                        await lectureDraft.destroy({ transaction: t });
+                                    }
+
+                                    if (documentsDraft.length > 0) {
+                                        for (const docDraft of documentsDraft) {
+                                            const document = await Document.findByPk(docDraft.id_document);
+                                            documentInstances.push(document);
+                                        }
+                                        await topicToUpdate.setDocuments(documentInstances, { transaction: t });
+                                    }
+                                    await topicToUpdate.update({ ...topic, order: j, video }, { transaction: t });
+                                    j++;
                                 }
-                            });
-
-                            const documentsDraft = await CourseDraft.findAll({
-                                where: {
-                                    id_topic: topic.id,
-                                    type: "document",
-                                }
-                            });
-
-                            let video = topicToUpdate.video;
-                            let documentInstances = [];
-
-                            if (lectureDraft) {
-                                video = lectureDraft.url;
-                                await lectureDraft.destroy({ transaction: t });
                             }
-
-                            if (documentsDraft.length > 0) {
-                                for (const docDraft of documentsDraft) {
-                                    const document = await Document.findByPk(docDraft.id_document);
-                                    documentInstances.push(document);
-                                }
-                                await topicToUpdate.setDocuments(documentInstances, { transaction: t });
-                            }
-                            await topicToUpdate.update({ ...topic, order: j, video }, { transaction: t });
-                            j++;
                         }
                     }
                     i++;
