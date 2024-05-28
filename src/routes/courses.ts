@@ -15,13 +15,21 @@ router.route('/')
     .post(Authorize.protectedAPI, courseController.createCourse)
 
 router.route('/page/:page')
-    .get(Authorize.checkGetAll, Authorize.verifyUser, courseController.getAllCourse)
+    .get(
+        Authorize.checkGetAll, 
+        Authorize.verifyUser, 
+        courseController.getAllCourse
+    );
 
 router.route('/search/page/:page')
     .post(courseController.searchCourse);
 
 router.route('/search/teacher/:teacherId/page/:page')
-    .get(Authorize.verifyUser, CheckingCourse.checkSearchCourseOfTeacher, courseController.searchCourseOfTeacher);
+    .get(
+        Authorize.verifyUser, 
+        CheckingCourse.checkSearchCourseOfTeacher, 
+        courseController.searchCourseOfTeacher
+    );
 
 router.route('/student-course')
     .get(courseController.getRecordsOfStudentCourseTable);

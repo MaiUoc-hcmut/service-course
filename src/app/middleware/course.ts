@@ -48,12 +48,12 @@ class CheckingCourse {
 
     checkGetCourseCreatedByTeacher = async (req: Request, _res: Response, next: NextFunction) => {
         try {
-            if (req.authority === 0) next();
+            if (req.authority === 0) return next();
             const id_user = req.user?.user.data.id;
-            const role = req.user?.role;
             const id_teacher = req.params.teacherId;
 
-            if (id_user === id_teacher || role === "admin") req.authority = 2;
+            if (id_user === id_teacher) req.authority = 3;
+            else req.authority = 1;
             next();
         } catch (error: any) {
             console.log(error.message);
@@ -112,6 +112,12 @@ class CheckingCourse {
             const role = req.user?.role;
             const id_course = req.params.courseId;
 
+            const course = await Course.findByPk(id_course);
+
+            if (!course) {
+                return next(createError.NotFound("Course does not exist!"));
+            }
+
             let user: {
                 user?: any,
                 role?: string
@@ -120,7 +126,13 @@ class CheckingCourse {
                 role: req.user?.role
             }
 
-            if (role === "teacher" || role === "admin") {
+            if (id_user === course.id_teacher) {
+                req.authority = 3;
+                req.user = user;
+                return next();
+            }
+
+            if (role === "admin") {
                 req.authority = 2;
                 req.user = user;
                 return next();
@@ -139,7 +151,7 @@ class CheckingCourse {
                 return next();
             }
 
-            const response = await axios.get(`${process.env.BASE_URL_PAYMENT_LOCAL}/cart/check/${id_course}/${id_user}/product=course`);
+            const response = await axios.get(`${process.env.BASE_URL_PAYMENT_LOCAL}/cart/check/${id_course}/${id_user}?product=course`);
             if (response.data.result) {
                 req.authority = -1;
                 req.user = user;
@@ -148,6 +160,15 @@ class CheckingCourse {
             req.authority = 0;
             req.user = user;
             next();
+        } catch (error: any) {
+            console.log(error.message);
+            next(createError.InternalServerError(error.message));
+        }
+    }
+
+    checkGetAllCourses = async (req: Request, _res: Response, next: NextFunction) => {
+        try {
+            
         } catch (error: any) {
             console.log(error.message);
             next(createError.InternalServerError(error.message));

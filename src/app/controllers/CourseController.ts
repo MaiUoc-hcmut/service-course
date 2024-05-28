@@ -92,6 +92,8 @@ class CourseController {
         try {
             const authority = req.authority;
 
+            console.log(authority);
+
             let status = authority === 2
                             ? ['public', 'paid', 'private', 'draft']
                             : ['public', 'paid'];
@@ -394,22 +396,16 @@ class CourseController {
         try {
             const authority = req.authority;
 
-            let status = authority === 2
-                ? ['public', 'paid', 'private']
-                : ['public', 'paid']
-
-            const course = await Course.findOne({
+            let course = await Course.findOne({
                 where: { id: req.params.courseId },
                 include: [
                     {
                         model: Chapter,
                         as: 'chapters',
-                        where: { status },
                         include: [
                             {
                                 model: Topic,
                                 as: 'topics',
-                                where: { status },
                                 include: [
                                     {
                                         model: Document,
@@ -438,14 +434,13 @@ class CourseController {
                     }
                 ]
             });
-
-            if (!course) return res.status(404).json({ message: "Course does not exist" });
+            course = course.get({ plain: true });
 
             for (const category of course.Categories) {
                 const parCategory = await ParentCategory.findByPk(category.id_par_category);
-                category.dataValues[`${parCategory.name}`] = category.name;
-                delete category.dataValues.name;
-                delete category.dataValues.id_par_category;
+                category[`${parCategory.name}`] = category.name;
+                delete category.name;
+                delete category.id_par_category;
             }
 
             course.chapters.sort((a: any, b: any) => a.order - b.order);
@@ -454,8 +449,24 @@ class CourseController {
                 chapter.topics.sort((a: any, b: any) => a.order - b.order);
             });
 
+            if (authority !== undefined && authority < 3) {
+                course.chapters = course.chapters.filter((chapter: any) => chapter.status !== "draft");
+            }
+
+            if (authority !== undefined && authority <2) {
+                course.chapters = course.chapters.filter((chapter: any) => chapter.status !== "private");
+            }
+
             let apparentDuration = 0;
             for (const chapter of course.chapters) {
+                if (authority !== undefined && authority < 3) {
+                    chapter.topics = chapter.topics.filter((topic: any) => topic.status !== "draft");
+                }
+    
+                if (authority !== undefined && authority <2) {
+                    chapter.topics = chapter.topics.filter((topic: any) => topic.status !== "private");
+                }
+
                 let totalChapterDuration = 0;
                 let totalChapterLectures = 0;
                 let totalChapterExams = 0;
@@ -464,56 +475,56 @@ class CourseController {
                     topic.type === "lecture" ? totalChapterLectures++ : totalChapterExams++;
 
                     if (authority === 0 && topic.status === "paid" && topic.type === "lecture") {
-                        delete topic.dataValues.video;
+                        delete topic.video;
                     }
                     if (topic.type === "exam") {
                         try {
                             const exam = await axios.get(`${process.env.BASE_URL_EXAM_LOCAL}/exams/${topic.id_exam}`);
-                            topic.dataValues.exam = {
+                            topic.exam = {
                                 quantity_question: exam.data.quantity_question,
                                 period: exam.data.period
                             }
 
                             if (topic.status === "paid" && authority === 0) {
-                                delete topic.dataValues.id_exam;
+                                delete topic.id_exam;
                             }
                         } catch (error) {
-                            topic.dataValues.exam = {
+                            topic.exam = {
                                 quantity_question: 0,
                                 period: null
                             };
                         }
                     }
                 };
-                chapter.dataValues.totalDuration = totalChapterDuration;
-                chapter.dataValues.totalChapterLectures = totalChapterLectures;
-                chapter.dataValues.totalChapterExams = totalChapterExams;
+                chapter.totalDuration = totalChapterDuration;
+                chapter.totalChapterLectures = totalChapterLectures;
+                chapter.totalChapterExams = totalChapterExams;
 
                 apparentDuration += totalChapterDuration;
             };
 
-            course.dataValues.authority = authority;
-            course.dataValues.apparentDuration = apparentDuration;
+            course.authority = authority;
+            course.apparentDuration = apparentDuration;
 
             if (authority === 1) {
-                course.dataValues.added = true;
-                course.dataValues.cart_or_bought = "bought";
+                course.added = true;
+                course.cart_or_bought = "bought";
             }
             if (authority === -1) {
-                course.dataValues.added = true;
-                course.dataValues.cart_or_bought = "cart";
+                course.added = true;
+                course.cart_or_bought = "cart";
             }
 
             try {
                 const teacher = await axios.get(`${process.env.BASE_URL_LOCAL}/teacher/get-teacher-by-id/${course.id_teacher}`);
 
-                course.dataValues.teacher = {
+                course.teacher = {
                     id: teacher.data.id,
                     name: teacher.data.name,
                     avatar: teacher.data.avatar
                 }
 
-                delete course.dataValues.id_teacher
+                delete course.id_teacher
             } catch (error: any) {
                 console.log(error.message);
             }
@@ -533,9 +544,13 @@ class CourseController {
 
             const authority = req.authority;
 
-            let status = (authority === 2 || req.user?.user.data.id === id_teacher)
-                ? ['public', 'paid', 'private']
-                : ['public', 'paid'];
+            let status = authority === 3
+                ? ['public', 'paid', 'private', 'draft']
+                : (
+                    authority === 2
+                    ? ['public', 'paid', 'private']
+                    : ['public', 'paid']
+                );
 
             enum SortQuery {
                 Rating = 'rating',
