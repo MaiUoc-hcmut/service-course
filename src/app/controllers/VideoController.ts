@@ -110,12 +110,42 @@ class VideoController {
                 }
             });
 
+            if (!chapter) {
+                await CourseDraft.create({
+                    id_course: body.id_course,
+                    url,
+                    duration,
+                    chapter_order: chapterIdx,
+                    topic_order: topicIdx,
+                    type: "lecture"
+                });
+
+                return res.status(201).json({
+                    message: "Video has been uploaded to cloud!"
+                });
+            }
+
             const topic = await Topic.findOne({
                 where: {
                     id_chapter: chapter.id,
                     order: topicIdx
                 }
             });
+
+            if (!topic) {
+                await CourseDraft.create({
+                    id_course: body.id_course,
+                    url,
+                    duration,
+                    chapter_order: chapterIdx,
+                    topic_order: topicIdx,
+                    type: "lecture"
+                });
+
+                return res.status(201).json({
+                    message: "Video has been uploaded to cloud!"
+                });
+            }
 
             if (topic.video) {
                 throw new Error("This topic already has video, please call another API if you want to update video of topic")
