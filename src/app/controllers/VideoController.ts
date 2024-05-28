@@ -2,7 +2,6 @@ const CourseDraft = require('../../db/models/course_draft');
 const Course = require('../../db/models/course');
 const Chapter = require('../../db/models/chapter');
 const Topic = require('../../db/models/topic');
-import axios from 'axios';
 import { Request, Response, NextFunction } from 'express';
 
 const { getVideoDurationInSeconds } = require('get-video-duration');
@@ -31,6 +30,7 @@ class VideoController {
         const t = await sequelize.transaction();
         try {
             // const id_user = req.teacher.data.id;
+            console.log(33);
             const video = req.file;
 
             if (!video) {
@@ -38,12 +38,14 @@ class VideoController {
                     message: "Can not find video!"
                 })
             }
+            console.log(41);
 
             if (!video.mimetype.startsWith('video/')) {
                 return res.status(400).json({
                     message: "Invalid mimetype for video topic!"
                 })
             }
+            console.log(48);
             const dateTime = fileUpload.giveCurrentDateTime();
 
             let body = req.body.data;
@@ -52,6 +54,7 @@ class VideoController {
                 body = JSON.parse(body);
             }
 
+            console.log(57);
             const firstHyphen = video.originalname.indexOf('-');
             const chapterIdx = video.originalname.substring(0, firstHyphen);
 
@@ -60,21 +63,27 @@ class VideoController {
 
             const originalFileName = video.originalname.substring(secondHyphen + 1);
 
+            console.log(66);
             const storageRef = ref(
                 storage,
                 `video course/${originalFileName + "       " + dateTime}`
             );
 
+            console.log(72);
             const metadata = {
                 contentType: video.mimetype,
             };
 
             const snapshot = await uploadBytesResumable(storageRef, video.buffer, metadata);
+            console.log(78);
             const url = await getDownloadURL(snapshot.ref);
+            console.log(80);
             const duration = await getVideoDurationInSeconds(url);
+            console.log(82);
 
             // Check if course has been created
             const course = await Course.findByPk(body.id_course);
+            console.log(86);
 
             // If course is not created yet, create a draft of topic
             if (!course) {
@@ -124,14 +133,6 @@ class VideoController {
             }, {
                 transaction: t
             });
-
-            // const data = {
-            //     id_user,
-            //     url,
-            //     name: originalFileName
-            // }
-
-            // const response = await axios.get(`${process.env.BASE_URL_NOTIFICATION_LOCAL}/notification/upload-video`, { data });
 
             await t.commit();
 
