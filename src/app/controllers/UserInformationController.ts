@@ -17,12 +17,24 @@ class UserInformationController {
     getTeacherInformation = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const id_teacher = req.params.teacherId;
+            const authority = req.authority;
 
             const startDay = new Date();
-            startDay.setHours(0, 0, 0, 0)
+            startDay.setHours(0, 0, 0, 0);
+
+            const status = authority === 3
+                ? ['public', 'paid', 'private', 'draft']
+                : (
+                    authority === 2
+                    ? ['public', 'paid', 'private']
+                    : ['public', 'paid']
+                );
 
             const course_quantity = await Course.count({
-                where: { id_teacher }
+                where: { 
+                    id_teacher,
+                    status
+                }
             });
 
             const studentRecords = await StudentCourse.findAll({
