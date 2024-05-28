@@ -97,6 +97,7 @@ class VideoController {
 
             // If course has been created, then update
             const total_duration = course.total_duration + duration
+            console.log(duration, total_duration);
             await course.update({
                 total_duration
             }, {
