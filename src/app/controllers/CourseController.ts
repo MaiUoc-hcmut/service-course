@@ -473,7 +473,8 @@ class CourseController {
                                 data: {
                                     quantity_question: exam.data.quantity_question,
                                     period: exam.data.period,
-                                    pass_score: exam.data.pass_score
+                                    pass_score: exam.data.pass_score,
+                                    title: exam.data.title
                                 }
                             }
 
