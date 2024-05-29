@@ -1037,25 +1037,31 @@ class CourseController {
                                 chapters[i].topics[j].exam.data.categories = categories;
                                 chapters[i].topics[j].exam.data.id_course = newCourse.id;
                                 chapters[i].topics[j].exam.data.title = chapters[i].topics[j].name;
-                                const exam = await axios.post(
-                                    `${process.env.BASE_URL_EXAM_LOCAL}/exams`,
-                                    chapters[i].topics[j].exam,
-                                    { headers }
-                                );
+                                try {
+                                    const exam = await axios.post(
+                                        `${process.env.BASE_URL_EXAM_LOCAL}/exams`,
+                                        chapters[i].topics[j].exam,
+                                        { headers }
+                                    );
+                                    
+                                    await Topic.create({
+                                        id_chapter: newChapter.id,
+                                        id_exam: exam.data.id,
+                                        name: chapters[i].topics[j].name,
+                                        description: chapters[i].topics[j].description,
+                                        order: j + 1,
+                                        status: chapters[i].topics[j].status,
+                                        type: "exam",
+                                    }, {
+                                        transaction: t
+                                    });
 
-                                await Topic.create({
-                                    id_chapter: newChapter.id,
-                                    id_exam: exam.data.id,
-                                    name: chapters[i].topics[j].name,
-                                    description: chapters[i].topics[j].description,
-                                    order: j + 1,
-                                    status: chapters[i].topics[j].status,
-                                    type: "exam",
-                                }, {
-                                    transaction: t
-                                });
-
-                                continue;
+                                    continue;
+                                } catch (error: any) {
+                                    return res.status(400).json({
+                                        message: error.message
+                                    });
+                                }
                             }
 
                             let topicVideoURL = "";
