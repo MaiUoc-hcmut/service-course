@@ -1717,7 +1717,7 @@ class CourseController {
                     }
                     i++;
                 }
-
+                console.log(1720);
                 await course.update({
                     total_lecture: totalLecture,
                     total_exam: totalExam,
