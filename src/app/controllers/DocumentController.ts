@@ -178,7 +178,6 @@ class DocumentController {
 
             // If course is not created yet
             if (!course) {
-                console.log(newDocument.id);
                 await CourseDraft.create({
                     url,
                     topic_order: topicIdx,
@@ -197,16 +196,42 @@ class DocumentController {
                     }
                 });
 
-                const topic = await Topic.findOne({
-                    where: {
-                        id_chapter: chapter.id,
-                        order: topicIdx
+                if (!chapter) {
+                    await CourseDraft.create({
+                        url,
+                        topic_order: topicIdx,
+                        chapter_order: chapterIdx,
+                        id_course,
+                        id_document: newDocument.id,
+                        type: "document"
+                    }, {
+                        transaction: t
+                    });
+                } else {
+                    const topic = await Topic.findOne({
+                        where: {
+                            id_chapter: chapter.id,
+                            order: topicIdx
+                        }
+                    });
+
+                    if (!topic) {
+                        await CourseDraft.create({
+                            url,
+                            topic_order: topicIdx,
+                            chapter_order: chapterIdx,
+                            id_course,
+                            id_document: newDocument.id,
+                            type: "document"
+                        }, {
+                            transaction: t
+                        });
+                    } else {
+                        await topic.addDocument(newDocument, {
+                            transaction: t
+                        });
                     }
-                });
-                console.log(newDocument);
-                await topic.addDocument(newDocument, {
-                    transaction: t
-                });
+                }
             }
 
             await t.commit()
