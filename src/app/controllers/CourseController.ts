@@ -1038,6 +1038,7 @@ class CourseController {
                                 chapters[i].topics[j].exam.data.categories = categories;
                                 chapters[i].topics[j].exam.data.id_course = newCourse.id;
                                 chapters[i].topics[j].exam.data.title = chapters[i].topics[j].name;
+                                chapters[i].topics[j].exam.data.status = chapters[i].topics[j].status;
                                 try {
                                     const exam = await axios.post(
                                         `${process.env.BASE_URL_EXAM_LOCAL}/exams`,
@@ -1459,6 +1460,7 @@ class CourseController {
                                     topic.exam.data.categories = categories;
                                     topic.exam.data.id_course = course.id;
                                     topic.exam.data.title = topic.name;
+                                    topic.exam.data.status = topic.status;
                                     const exam = await axios.post(
                                         `${process.env.BASE_URL_EXAM_LOCAL}/exams`,
                                         topic.exam,
@@ -1578,6 +1580,7 @@ class CourseController {
                                     topic.exam.data.categories = categories;
                                     topic.exam.data.id_course = course.id;
                                     topic.exam.data.title = topic.name;
+                                    topic.exam.data.status = topic.status;
                                     const exam = await axios.post(
                                         `${process.env.BASE_URL_EXAM_LOCAL}/exams`,
                                         topic.exam,
