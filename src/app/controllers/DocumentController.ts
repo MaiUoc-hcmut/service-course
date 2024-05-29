@@ -203,7 +203,7 @@ class DocumentController {
                         order: topicIdx
                     }
                 });
-
+                console.log(newDocument);
                 await topic.addDocument(newDocument, {
                     transaction: t
                 });

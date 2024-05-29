@@ -1667,6 +1667,15 @@ class CourseController {
 
                             // Topic need to delete
                             if (topic.modify === "delete") {
+                                const topicToDelete = await Topic.findByPk(topic.id);
+                                if (topic.type === "exam") {
+                                    try {
+                                        await axios.delete(`${process.env.BASE_URL_EXAM_LOCAL}/exams/${topic.id_exam}`);
+                                    } catch (error) {
+                                        console.log(error);
+                                    }
+                                }
+                                
                                 await Topic.destroy({
                                     where: { id: topic.id }
                                 }, {
