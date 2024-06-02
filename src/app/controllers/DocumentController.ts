@@ -40,6 +40,9 @@ class DocumentController {
     getAllDocuments = async (_req: Request, res: Response, _next: NextFunction) => {
         try {
             const documents = await Document.findAll();
+            for (const document of documents) {
+                document.dataValues.isFile = true;
+            }
             res.status(200).json({
                 files: documents,
                 "cwd": {
