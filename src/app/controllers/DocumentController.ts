@@ -40,67 +40,7 @@ class DocumentController {
     getAllDocuments = async (_req: Request, res: Response, _next: NextFunction) => {
         try {
             const documents = await Document.findAll();
-            const temp = {
-                "path": null,
-      "action": null,
-      "newName": null,
-      "size": 0,
-      "previousName": null,
-      "dateModified": "2024-06-01T10:16:35.2376305+00:00",
-      "dateCreated": "2024-06-01T10:17:05.5852155+00:00",
-      "hasChild": false,
-      "isFile": true,
-      "type": ".hond",
-      "id": null,
-      "filterPath": "\\",
-      "filterId": null,
-      "parentId": null,
-      "targetPath": null,
-      "renameFiles": null,
-      "uploadFiles": null,
-      "caseSensitive": false,
-      "searchString": null,
-      "showHiddenItems": false,
-      "showFileExtension": false,
-      "data": null,
-      "targetData": null,
-      "permission": null
-            }
-            for (const document of documents) {
-                // document.dataValues.isFile = true;
-                Object.assign(document.dataValues, temp);
-            }
-            res.status(200).json({
-                files: documents,
-                "cwd": {
-                    "path": null,
-                    "action": null,
-                    "newName": null,
-                    "names": null,
-                    "name": "Files",
-                    "size": 0,
-                    "previousName": null,
-                    "dateModified": "2024-06-02T07:29:39.1468366+00:00",
-                    "dateCreated": "2024-06-02T07:29:48.5666674+00:00",
-                    "hasChild": true,
-                    "isFile": false,
-                    "type": "",
-                    "id": null,
-                    "filterPath": "",
-                    "filterId": null,
-                    "parentId": null,
-                    "targetPath": null,
-                    "renameFiles": null,
-                    "uploadFiles": null,
-                    "caseSensitive": false,
-                    "searchString": null,
-                    "showHiddenItems": false,
-                    "showFileExtension": false,
-                    "data": null,
-                    "targetData": null,
-                    "permission": null
-                  },
-            });
+            res.status(200).json(documents);
         } catch (error: any) {
             console.log(error.message);
             res.status(500).json({ error });
