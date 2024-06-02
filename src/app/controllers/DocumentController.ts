@@ -40,7 +40,9 @@ class DocumentController {
     getAllDocuments = async (_req: Request, res: Response, _next: NextFunction) => {
         try {
             const documents = await Document.findAll();
-            res.status(200).json(documents);
+            res.status(200).json({
+                files: documents
+            });
         } catch (error: any) {
             console.log(error.message);
             res.status(500).json({ error });
