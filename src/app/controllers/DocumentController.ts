@@ -40,8 +40,36 @@ class DocumentController {
     getAllDocuments = async (_req: Request, res: Response, _next: NextFunction) => {
         try {
             const documents = await Document.findAll();
+            const temp = {
+                "path": null,
+      "action": null,
+      "newName": null,
+      "name": "1.hond",
+      "size": 0,
+      "previousName": null,
+      "dateModified": "2024-06-01T10:16:35.2376305+00:00",
+      "dateCreated": "2024-06-01T10:17:05.5852155+00:00",
+      "hasChild": false,
+      "isFile": false,
+      "type": ".hond",
+      "id": null,
+      "filterPath": "\\",
+      "filterId": null,
+      "parentId": null,
+      "targetPath": null,
+      "renameFiles": null,
+      "uploadFiles": null,
+      "caseSensitive": false,
+      "searchString": null,
+      "showHiddenItems": false,
+      "showFileExtension": false,
+      "data": null,
+      "targetData": null,
+      "permission": null
+            }
             for (const document of documents) {
-                document.dataValues.isFile = true;
+                // document.dataValues.isFile = true;
+                Object.assign(document.dataValues, temp);
             }
             res.status(200).json({
                 files: documents,
