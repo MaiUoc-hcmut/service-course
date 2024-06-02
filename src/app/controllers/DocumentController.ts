@@ -41,7 +41,35 @@ class DocumentController {
         try {
             const documents = await Document.findAll();
             res.status(200).json({
-                files: documents
+                files: documents,
+                "cwd": {
+                    "path": null,
+                    "action": null,
+                    "newName": null,
+                    "names": null,
+                    "name": "Files",
+                    "size": 0,
+                    "previousName": null,
+                    "dateModified": "2024-06-02T07:29:39.1468366+00:00",
+                    "dateCreated": "2024-06-02T07:29:48.5666674+00:00",
+                    "hasChild": true,
+                    "isFile": false,
+                    "type": "",
+                    "id": null,
+                    "filterPath": "",
+                    "filterId": null,
+                    "parentId": null,
+                    "targetPath": null,
+                    "renameFiles": null,
+                    "uploadFiles": null,
+                    "caseSensitive": false,
+                    "searchString": null,
+                    "showHiddenItems": false,
+                    "showFileExtension": false,
+                    "data": null,
+                    "targetData": null,
+                    "permission": null
+                  },
             });
         } catch (error: any) {
             console.log(error.message);
