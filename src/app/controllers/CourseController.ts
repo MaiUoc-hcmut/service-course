@@ -1482,7 +1482,7 @@ class CourseController {
                                         }
                                     });
 
-                                    const documentsDraft = await CourseDraft.All({
+                                    const documentsDraft = await CourseDraft.findAll({
                                         where: {
                                             id_topic: topic.id,
                                             type: "document"
