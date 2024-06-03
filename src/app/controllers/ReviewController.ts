@@ -45,6 +45,8 @@ class ReviewController {
                         avatar: "Error"
                     }
                 }
+                const course = await Course.findByPk(review.id_course);
+                review.dataValues.course_name = course.name;
             }
 
             res.status(200).json(reviews);
