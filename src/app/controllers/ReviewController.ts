@@ -31,11 +31,11 @@ class ReviewController {
             for (const review of reviews) {
                 try {
                     const student = await axios.get(`${process.env.BASE_URL_LOCAL}/student/${review.id_student}`);
-                    review.dataValues.student = {
-                        id: student.id,
-                        name: student.name,
-                        email: student.email,
-                        avatar: student.avatar
+                    review.dataValues.user = {
+                        id: student.data.id,
+                        name: student.data.name,
+                        email: student.data.email,
+                        avatar: student.data.avatar
                     }
                 } catch (error) {
                     review.dataValues.student = {
