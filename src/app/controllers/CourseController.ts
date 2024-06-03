@@ -1664,8 +1664,11 @@ class CourseController {
                             if (topic.modify === "delete") {
                                 const topicToDelete = await Topic.findByPk(topic.id);
                                 if (topic.type === "exam") {
+                                    const headers = {
+                                        'Authorization': req.headers.authorization
+                                    }
                                     try {
-                                        await axios.delete(`${process.env.BASE_URL_EXAM_LOCAL}/exams/${topic.id_exam}`);
+                                        await axios.delete(`${process.env.BASE_URL_EXAM_LOCAL}/exams/${topic.id_exam}`, { headers });
                                     } catch (error) {
                                         console.log(error);
                                     }
