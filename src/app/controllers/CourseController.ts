@@ -1424,10 +1424,10 @@ class CourseController {
                 Categories = categoriesList.map(({ id, name }) => ({ id, name }));
             }
             // If chapter need to update
+            let totalLecture = course.total_lecture;
+            let totalExam = course.total_exam;
             if (chapters !== undefined) {
                 let i = 1;
-                let totalLecture = course.total_lecture;
-                let totalExam = course.total_exam;
                 for (const chapter of chapters) {
 
                     const { topics, ...chapterBody } = chapter;
@@ -1724,15 +1724,14 @@ class CourseController {
                     }
                     i++;
                 }
-                console.log(1720);
-                await course.update({
-                    total_lecture: totalLecture,
-                    total_exam: totalExam,
-                }, {
-                    transaction: t
-                });
             }
 
+            await course.update({
+                total_lecture: totalLecture,
+                total_exam: totalExam,
+            }, {
+                transaction: t
+            });
             await t.commit();
             const dataToUpdate = {
                 ...courseBody,

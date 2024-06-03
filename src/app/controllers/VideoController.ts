@@ -199,13 +199,7 @@ class VideoController {
                 body = JSON.parse(body);
             }
 
-            const firstHyphen = video.originalname.indexOf('-');
-            // const chapterIdx = video.originalname.substring(0, firstHyphen);
-
-            const secondHyphen = video.originalname.indexOf('-', firstHyphen + 1);
-            // const topicIdx = video.originalname.substring(firstHyphen + 1, secondHyphen);
-
-            const originalFileName = video.originalname.substring(secondHyphen + 1);
+            const originalFileName = video.originalname;
 
             const storageRef = ref(
                 storage,
