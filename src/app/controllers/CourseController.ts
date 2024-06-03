@@ -250,7 +250,7 @@ class CourseController {
                 order: [[defaultQuery, defaultOrder]],
                 limit: pageSize,
                 offset: pageSize * (currentPage - 1),
-                subQuery: false
+                // subQuery: false
             });
 
             for (const course of courses) {
