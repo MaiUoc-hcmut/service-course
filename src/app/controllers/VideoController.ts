@@ -218,7 +218,8 @@ class VideoController {
 
             const snapshot = await uploadBytesResumable(storageRef, video.buffer, metadata);
             const url = await getDownloadURL(snapshot.ref);
-            const duration = await getVideoDurationInSeconds(url);
+            const { stdout } = await execPromise(`ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${url}"`);
+            const duration = parseInt(stdout);
 
             // Check if course has been created
             const course = await Course.findByPk(body.id_course);
