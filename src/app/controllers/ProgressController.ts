@@ -27,8 +27,7 @@ class ProgressController {
             });
 
             const totalTopic = course.total_lecture + course.total_exam;
-            const percentageProgress = (progress.length / totalTopic) * 100;
-            console.log(progress.length, totalTopic, percentageProgress);
+            const percentageProgress = Math.round((progress.length / totalTopic) * 100);
 
             res.status(200).json({
                 progress,

@@ -668,7 +668,7 @@ class CourseController {
                         id_course: record.id_course
                     }
                 });
-                const progress = countTopic / (record.Course.total_exam + record.Course.total_lecture);
+                const progress = Math.round(countTopic / (record.Course.total_exam + record.Course.total_lecture));
                 record.dataValues.progress = progress;
                 record.dataValues.teacher = { id: user.data.id, name: user.data.name };
             }
