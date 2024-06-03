@@ -279,13 +279,8 @@ class CourseController {
 
                 for (const category of course_category.Categories) {
                     const parCategory = await ParentCategory.findByPk(category.id_par_category);
-                    category.dataValues[`${parCategory.name}`] = category.name;
-                    delete category.dataValues.name;
-                    delete category.dataValues.id_par_category;
-                    delete category.dataValues.createdAt;
-                    delete category.dataValues.updatedAt;
+                    course.dataValues[`${parCategory.name}`] = category.name;
                 }
-                course.dataValues.Categories = course_category.dataValues.Categories;
             }
 
             res.status(200).json({ count: count.length, courses });
@@ -427,10 +422,9 @@ class CourseController {
 
             for (const category of course.Categories) {
                 const parCategory = await ParentCategory.findByPk(category.id_par_category);
-                category[`${parCategory.name}`] = category.name;
-                delete category.name;
-                delete category.id_par_category;
+                course[`${parCategory.name}`] = category.name;
             }
+            delete course.Categories;
 
             course.chapters.sort((a: any, b: any) => a.order - b.order);
 
@@ -610,11 +604,10 @@ class CourseController {
                 // Format category before response
                 for (const category of course.Categories) {
                     const parCategory = await ParentCategory.findByPk(category.id_par_category);
-                    category.dataValues[`${parCategory.name}`] = category.name;
-
-                    delete category.dataValues.name;
-                    delete category.dataValues.id_par_category;
+                    // category.dataValues[`${parCategory.name}`] = category.name;
+                    course.dataValues[`${parCategory.name}`] = category.name;
                 }
+                delete course.dataValues.Categories;
 
                 const reviews = await Review.findAll({
                     where: { id_course: course.id },
