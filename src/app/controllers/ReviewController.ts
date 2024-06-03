@@ -28,6 +28,25 @@ class ReviewController {
         try {
             const reviews = await Review.findAll();
 
+            for (const review of reviews) {
+                try {
+                    const student = await axios.get(`${process.env.BASE_URL_LOCAL}/student/${review.id_student}`);
+                    review.dataValues.student = {
+                        id: student.id,
+                        name: student.name,
+                        email: student.email,
+                        avatar: student.avatar
+                    }
+                } catch (error) {
+                    review.dataValues.student = {
+                        id: review.id_student,
+                        name: "Error",
+                        email: "Error",
+                        avatar: "Error"
+                    }
+                }
+            }
+
             res.status(200).json(reviews);
         } catch (error: any) {
             console.log(error.message);
