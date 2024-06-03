@@ -1550,6 +1550,18 @@ class CourseController {
                         const chapterToDelete = await Chapter.findByPk(chapter.id);
 
                         if (!chapterToDelete) throw new Error(`Chapter with id ${chapter.id} does not exist`);
+                        for (const topic of chapter.topics) {
+                            if (topic.type === "exam") {
+                                const headers = {
+                                    'Authorization': req.headers.authorization
+                                }
+                                try {
+                                    await axios.delete(`${process.env.BASE_URL_EXAM_LOCAL}/exams/${topic.id_exam}`, { headers });
+                                } catch (error) {
+                                    console.log(error);
+                                }
+                            }
+                        }
                         await chapterToDelete.destroy({ transaction: t });
                         continue;
                     }
@@ -1662,7 +1674,6 @@ class CourseController {
 
                             // Topic need to delete
                             if (topic.modify === "delete") {
-                                const topicToDelete = await Topic.findByPk(topic.id);
                                 if (topic.type === "exam") {
                                     const headers = {
                                         'Authorization': req.headers.authorization
